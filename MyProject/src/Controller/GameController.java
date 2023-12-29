@@ -3,6 +3,8 @@ package Controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import DTO.NPC;
+import DTO.Player;
 import Menu.*;
 
 
@@ -26,6 +28,8 @@ public class GameController {
 		}
 		
 	}
+	private Player curPlayer;
+	private NPC NPC;
 	private String next="";
 	private static  GameController instance = new GameController();
 	private Map<String,MenuCommand> windowList = new HashMap<String, MenuCommand>();
@@ -36,6 +40,9 @@ public class GameController {
 	public static GameController getInstance() {
 		return instance;
 	}
+	public NPC getNPC() {
+		return NPC;
+	}
 	private void init() {
 		windowList.put(Menu.MAIN.getName(), new Main());
 		windowList.put(Menu.GAMESTART.getName(), new PlayGame());
@@ -45,7 +52,7 @@ public class GameController {
 		windowList.put(Menu.PLAYINVENTORY.getName(), new PlayInventory());
 		windowList.put(Menu.OPTION.getName(), new OptionMain());
 		windowList.put(Menu.CHANGEMODE.getName(), new OptionChangeMode());
-		
+		NPC = new NPC(1, 1, 1, "탱구");
 		this.next = "Main"; 
 	}
 	public void setNext(String next) {
@@ -58,5 +65,11 @@ public class GameController {
 			if(!window.update())break;
 		}
 		
+	}
+	public void setCurPlayer(Player p) {
+		this.curPlayer = p;
+	}
+	public Player getCurPlayer() {
+		return curPlayer;
 	}
 }

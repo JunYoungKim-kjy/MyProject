@@ -1,19 +1,25 @@
 package Menu;
 
+import Controller.GameController;
 import Controller.MenuCommand;
+import DAO.PlayerDAO;
 
 public class PlayChangePlayer implements MenuCommand {
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public boolean update() {
-		// TODO Auto-generated method stub
-		return false;
+		GameController.getInstance().setCurPlayer(PlayerDAO.getInstance().getPlayer());
+		
+		
+		
+		
+		GameController.getInstance().setNext(GameController.Menu.PLAYMAIN.getName());
+		return true;
 	}
 
 }
