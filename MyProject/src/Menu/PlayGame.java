@@ -1,9 +1,9 @@
-package Window;
+package Menu;
 
 import Controller.GameController;
-import Controller.Window;
+import Controller.MenuCommand;
 
-public class Open implements Window {
+public class PlayGame implements MenuCommand {
 
 	@Override
 	public void init() {

@@ -3,15 +3,22 @@ package Controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import Window.*;
+import Menu.*;
 
 
 public class GameController {
-	public enum window {
-		MAIN("Main"),GAMESTART("GameStart"),SHOP("Shop"),OPTION("Option");
+	public static enum Menu {
+		MAIN("Main"),
+		GAMESTART("GameStart"),
+		PLAYMAIN("PlayMain"),
+		PLAYSHOP("PlayShop"),
+		PLAYINVENTORY("PlayInventory"),
+		PLAYCHANGEPLAYER("ChangePlayer"),
+		OPTION("Option"),
+		CHANGEMODE("ChangeMode");
 		
 		private String name;
-		window(String name){
+		Menu(String name){
 			this.name = name;
 		}
 		public String getName() {
@@ -21,7 +28,7 @@ public class GameController {
 	}
 	private String next="";
 	private static  GameController instance = new GameController();
-	private Map<String,Window> windowList = new HashMap<String, Window>();
+	private Map<String,MenuCommand> windowList = new HashMap<String, MenuCommand>();
 	private GameController() {
 		init();
 	}
@@ -30,9 +37,14 @@ public class GameController {
 		return instance;
 	}
 	private void init() {
-		windowList.put("Main", new Main());
-		windowList.put("gameStart", new GameStart());
-		windowList.put("Open", new Open());
+		windowList.put(Menu.MAIN.getName(), new Main());
+		windowList.put(Menu.GAMESTART.getName(), new PlayGame());
+		windowList.put(Menu.PLAYMAIN.getName(), new PlayMain());
+		windowList.put(Menu.PLAYCHANGEPLAYER.getName(), new PlayChangePlayer());
+		windowList.put(Menu.PLAYSHOP.getName(), new PlayShop());
+		windowList.put(Menu.PLAYINVENTORY.getName(), new PlayInventory());
+		windowList.put(Menu.OPTION.getName(), new OptionMain());
+		windowList.put(Menu.CHANGEMODE.getName(), new OptionChangeMode());
 		
 		this.next = "Main"; 
 	}
@@ -41,7 +53,7 @@ public class GameController {
 	}
 	public void run() {
 		while(true) {
-			Window window = windowList.get(next);
+			MenuCommand window = windowList.get(next);
 			window.init();
 			if(!window.update())break;
 		}

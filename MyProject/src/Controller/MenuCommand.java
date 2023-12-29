@@ -1,6 +1,6 @@
 package Controller;
 
-public interface Window {
+public interface MenuCommand {
 	void init();
 	boolean update();
 
