@@ -1,11 +1,9 @@
 package DTO;
 
-import Controller.Unit;
-
 public class NPC extends Unit{
 
-	public NPC(int speed, int power, int boomCnt, String name) {
-		super(speed, power, boomCnt, name);
+	public NPC(int speed, int power, int boomCnt, String name,String mark) {
+		super(speed, power, boomCnt, name, mark);
 		// TODO Auto-generated constructor stub
 	}
 

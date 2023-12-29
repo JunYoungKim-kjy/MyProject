@@ -15,10 +15,10 @@ public class PlayerDAO {
 	PlayerDAO(){
 		pList = new ArrayList<Player>();
 		
-		pList.add(new Player(4, 2, 2, "배찌"));
-		pList.add(new Player(2, 3, 3, "다오"));
-		pList.add(new Player(2, 2, 4, "디지니"));
-		pList.add(new Player(3, 3, 3, "마리드"));
+		pList.add(new Player(4, 2, 2, "배찌", "🧸"));
+		pList.add(new Player(2, 3, 3, "다오", "👻"));
+		pList.add(new Player(2, 2, 4, "디지니","🎃"));
+		pList.add(new Player(3, 3, 3, "마리드","👩‍"));
 		
 	}
 	public void printPlayer() {

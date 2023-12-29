@@ -14,8 +14,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Util {
-	private static Scanner sc = new Scanner(System.in);
-	private static Random rd = new Random();
+	public static Scanner sc = new Scanner(System.in);
+	public static Random rd = new Random();
 	private static Util instance = new Util();
 	private static Charset charSet = StandardCharsets.UTF_8;
 	private static String filePath = "src/files";
@@ -51,12 +51,12 @@ public class Util {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(path.toString()),charSet))){
 			while(true) {
 				data = br.readLine();
-				try {
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				try {
+//					Thread.sleep(300);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 				if (data == null)break;
 				System.out.println(data);
 			}

@@ -1,18 +1,19 @@
-package Controller;
+package DTO;
 
 public abstract class Unit {
 	private int speed;
 	private int power;
 	private int boomCnt;
 	private String name;
+	private String mark;
 	
-	
-	public Unit(int speed, int power, int boomCnt, String name) {
+	public Unit(int speed, int power, int boomCnt, String name, String mark) {
 		super();
 		this.speed = speed;
 		this.power = power;
 		this.boomCnt = boomCnt;
 		this.name = name;
+		this.mark = mark;
 	}
 
 
@@ -48,6 +49,11 @@ public abstract class Unit {
 
 	public String getName() {
 		return name;
+	}
+
+
+	public String getMark() {
+		return mark;
 	}
 
 

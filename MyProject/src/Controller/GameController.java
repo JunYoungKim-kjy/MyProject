@@ -52,7 +52,7 @@ public class GameController {
 		windowList.put(Menu.PLAYINVENTORY.getName(), new PlayInventory());
 		windowList.put(Menu.OPTION.getName(), new OptionMain());
 		windowList.put(Menu.CHANGEMODE.getName(), new OptionChangeMode());
-		NPC = new NPC(1, 1, 1, "탱구");
+		NPC = new NPC(1, 1, 1, "탱구" , "옷");
 		this.next = "Main"; 
 	}
 	public void setNext(String next) {
