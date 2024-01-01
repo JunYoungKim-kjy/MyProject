@@ -12,17 +12,33 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import Controller.GameController;
 import DTO.Map;
 import Utils.Util;
 
 public class MapDAO {
 	List<Map> mapList = new ArrayList<Map>();
-	private static MapDAO instance = new MapDAO(); 
+	private static MapDAO instance = new MapDAO();
+	private GameController gc = GameController.getInstance(); 
 	private Charset charSet = StandardCharsets.UTF_8;
 	private String filePath = "src/files";
-	
+	private String curMap;
 	MapDAO(){
 		init();
+		curMap = selectMap();
+		setingMap();
+	}
+	
+	public String[][] setingMap() {
+		String[][] map;
+		String[] temp = curMap.split("\n");
+		map = new String[temp.length][];
+		int idx = 0;
+		for(String info : temp) {
+			map[idx++] = info.split(",");
+		}
+		gc.setMap(map);
+		return gc.getMap();
 	}
 	
 	public static MapDAO getInstance() {
@@ -46,7 +62,6 @@ public class MapDAO {
 		} catch (IOException e) {
 		}
 	}
-	
 	public String selectMap() {
 		for(int i=0; i < mapList.size(); i++) {
 			System.out.printf("[%d] [%s]\n",i+1,mapList.get(i).getName());
@@ -54,6 +69,7 @@ public class MapDAO {
 		int input = Util.getValue("맵 선택 [0.뒤로가기]", 1, mapList.size())-1;
 		return mapList.get(input).getMap();
 	}
+	
 	
 
 }

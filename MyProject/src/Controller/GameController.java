@@ -28,6 +28,7 @@ public class GameController {
 		}
 		
 	}
+	private String[][] map;
 	private Player curPlayer;
 	private NPC NPC;
 	private String next="";
@@ -72,4 +73,12 @@ public class GameController {
 	public Player getCurPlayer() {
 		return curPlayer;
 	}
+	public void setMap(String[][] map) {
+		this.map = map;
+	}
+
+	public String[][] getMap() {
+		return map;
+	}
+	
 }

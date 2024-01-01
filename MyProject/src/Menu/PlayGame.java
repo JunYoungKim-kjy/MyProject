@@ -2,33 +2,36 @@ package Menu;
 
 import Controller.GameController;
 import Controller.MenuCommand;
+import DAO.BombDAO;
 import DAO.MapDAO;
+import DTO.Bomb;
 import DTO.NPC;
 import DTO.Player;
 import Utils.Util;
 
-public class PlayGame implements MenuCommand {
+public class PlayGame implements MenuCommand{
 	private Player p;
 	private NPC n;
-	private String curMap;
-	private int pX;
-	private int pY;
-	private int nX;
-	private int nY;
+	private MapDAO mapDAO;
+	private BombDAO bombDAO;
+	private int turn; 
+	private GameController gc;
 	private String[][] map;
 
 	@Override
-	public void init() {
+ 	public void init() {
+		gc = GameController.getInstance();
 		p = GameController.getInstance().getCurPlayer();
 		n = GameController.getInstance().getNPC();
-		curMap = MapDAO.getInstance().selectMap();
-		setMap();
+		bombDAO = BombDAO.getInstance();
+		mapDAO = MapDAO.getInstance();
+		map = mapDAO.setingMap();
 		setUnit();
 		
 	}
 	private void setUnit() {
 		int playerLimit = 5;
-		int NPCLimit = map[0].length-5;
+		int NPCLimit = map[5].length-5;
 		while(true) {
 			int rY = Util.rd.nextInt(map.length);
 			int rX = Util.rd.nextInt(playerLimit);
@@ -36,8 +39,8 @@ public class PlayGame implements MenuCommand {
 				continue;
 			}
 			map[rY][rX] = "P";
-			pY = rY;
-			pX = rX;
+			p.setY(rY);
+			p.setX(rX);
 			break;
 		}
 		while(true) {
@@ -47,14 +50,14 @@ public class PlayGame implements MenuCommand {
 				continue;
 			}
 			map[rY][rX] = "N";
-			nY = rY;
-			nX = rX;
+			n.setY(rY);
+			n.setX(rX);
 			break;
 		}
 	}
 	private boolean action(String key) {
-		int pX = this.pX;
-		int pY = this.pY;
+		int pY = p.getY();
+		int pX = p.getX();
 		if (key.equals("w")) {
 			if (pY < 1)	return false;
 			pY-=1;
@@ -72,96 +75,66 @@ public class PlayGame implements MenuCommand {
 			pX+=1;
 			if (!map[pY][pX].equals("0"))return false;
 		} else if (key.equals("g")) {
-			if(!installBoom())return false;
-			Thread boomTimer = new Thread(()->{
-				boom(this.pY,this.pX,p.getPower());
-				
-			});
-			
-			
-			
-			
+			if(!plantBoom())return false;
+			return true;
 		} else {
 			return false;
 		}
 		
-		if(map[this.pY][this.pX].equals("PnB")) {
-			map[this.pY][this.pX] = "PB";
+		if(map[p.getY()][p.getX()].equals("PnB")) {
+			map[p.getY()][p.getX()] = "PB";
 		}else {
-			map[this.pY][this.pX] = "0";
+			map[p.getY()][p.getX()] = "0";
 		}
-		this.pY = pY;
-		this.pX = pX;
-		map[this.pY][this.pX] = "P";
+		p.setY(pY);
+		p.setX(pX);
+		map[p.getY()][p.getX()] = "P";
 		
 		return true;
 		
 		
 	}
-	private void boom(int bY,int bX, int power) {
-		for(int i= 0; i< power ; i+=1) {
-			int y = bY+i;
-			int x = bX+i;
-			if(bY+i < 0 || bY+i >map.length)continue;
-			if(bX+i < 0 || bX+i >map[0].length)continue;
-			if(map[y][x].equals("P")){
-				System.out.println("플레이어 죽음");
-				return;
-			}
-			if(map[y][x].equals("N")) {
-				System.out.println("NPC 죽음");
-				return;
-			}
-			if(!map[y][x].equals("RH")||!map[y][x].equals("BH")||!map[y][x].equals("YH")||!map[y][x].equals("T")) {
-				map[y][x] = "0";
-			}
-			switch (map[y][x]) {
-			case "P" : System.out.println("플레이어 죽음");
-						break;
-			case "N" : System.out.println("NPC 죽음");
-						break;
-			case "PnB" : boom(y,x,power);
-						break;
-			case "PB" : boom(y,x,power);
-						break;
-			case "NB" : boom(y, x, GameController.getInstance().getNPC().getPower());
-						break;
-			}
-//			if(map[y][x].equals("PnB")||map[y][x].equals("PB")) {
-//				boom(y, x, power);
-//			}
-//			if(map[y][x].equals("NB")) {
-//				boom(y, x, GameController.getInstance().getNPC().getPower());
-//			}
-//			map[bY][bX+y]
-			
+	private boolean plantBoom() {
+		if(p.getCurBobmCnt()>=p.getBombCnt() || map[p.getY()][p.getX()].equals("PnB")||map[p.getY()][p.getX()].equals("B")) {
+			System.err.println("설치 불가");
+			return false;
 		}
 		
+		Bomb b = bombDAO.plantBomb(p.getY(),p.getX(),p.getPower(),p);
+		map[b.getY()][b.getX()]="PnB";
+		p.setCurBobmCnt(p.getCurBobmCnt() + 1);
+		return true;
 		
 	}
-	private boolean installBoom() {
-		int installY = this.pY;
-		int installX = this.pX;
-		int power = GameController.getInstance().getCurPlayer().getPower();
-		map[installY][installX] = "PnB";
-		return true;
-	}
-	
 	private void run() {
 		while (true) {
 			printMap();
-			
 			System.out.println("     상(w)");
 			System.out.println("좌(a) 하(s) 우(d)");
 			System.out.println("폭탄놓기 (g)");
 			System.out.println("=================================");
 			String input = Util.getValue("입력 :");
 			if(!action(input))continue;
-			
-			
-			
+			bombDAO.checkBomb();
+			if(checkPLife()) {
+				System.out.println("플레이어 사망");
+				return;
+			}else if (checkNLife()) {
+				System.out.println("NPC 사망");
+			}
 		}		
-
+	}
+	private boolean checkPLife(){
+		if(gc.getCurPlayer().isDead()) {
+			return true;
+		}
+		return false;
+	}
+	private boolean checkNLife(){
+		if(gc.getNPC().isDead()) {
+			return true;
+		}
+		return false;
 	}
 	@Override
 	public boolean update() {
@@ -169,19 +142,12 @@ public class PlayGame implements MenuCommand {
 		GameController.getInstance().setNext("Main");
 		return true;
 	}
-	private void setMap() {
-		String[] temp = curMap.split("\n");
-		map = new String[temp.length][];
-		int idx = 0;
-		for(String info : temp) {
-			map[idx++] = info.split(",");
-		}
-	}
+	
 	private void printMap() {
-		for(String[] x : map) {
+		for(String[] x : gc.getMap()) {
 			for(String y : x) {
 				if(y.equals("0")) {
-					System.out.printf("  ");
+					System.out.printf("  ");
 				}else if(y.equals("RH")) {
 					System.out.printf("🎪");
 				}else if(y.equals("BH")){
@@ -202,64 +168,12 @@ public class PlayGame implements MenuCommand {
 					System.out.printf("😱");
 				}
 				
-				
 			}
 			System.out.println();
 		}
 	}
-}
-class Boom implements Runnable{
-	int y;
-	int x;
-	int power;
-	String[][] map;
-	Boom(int y, int x,int power,String[][] map){
-		this.y=y;
-		this.x=x;
-		this.power=power;
-		this.map = map;
-	}
 	
-	@Override
-	public void run() {
-		for(int i= 0; i< power ; i+=1) {
-			int y = bY+i;
-			int x = bX+i;
-			if(bY+i < 0 || bY+i >map.length)continue;
-			if(bX+i < 0 || bX+i >map[0].length)continue;
-			if(map[y][x].equals("P")){
-				System.out.println("플레이어 죽음");
-				return;
-			}
-			if(map[y][x].equals("N")) {
-				System.out.println("NPC 죽음");
-				return;
-			}
-			if(!map[y][x].equals("RH")||!map[y][x].equals("BH")||!map[y][x].equals("YH")||!map[y][x].equals("T")) {
-				map[y][x] = "0";
-			}
-			switch (map[y][x]) {
-			case "P" : System.out.println("플레이어 죽음");
-						break;
-			case "N" : System.out.println("NPC 죽음");
-						break;
-//			case "PnB" : Boom(y,x,power);
-//						break;
-//			case "PB" : boom(y,x,power);
-//						break;
-//			case "NB" : boom(y, x, GameController.getInstance().getNPC().getPower());
-//						break;
-			}
-//			if(map[y][x].equals("PnB")||map[y][x].equals("PB")) {
-//				boom(y, x, power);
-//			}
-//			if(map[y][x].equals("NB")) {
-//				boom(y, x, GameController.getInstance().getNPC().getPower());
-//			}
-//			map[bY][bX+y]
-			
-		}
-		
-	}
-	
+
+
+
 }
